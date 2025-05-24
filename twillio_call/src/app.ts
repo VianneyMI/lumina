@@ -7,7 +7,7 @@ import { type WebSocket } from 'ws';
 import { Readable } from 'stream';
 
 const app = ExpressWs(express()).app;
-const PORT: number = parseInt(process.env.PORT || '5000');
+const PORT: number = parseInt(process.env.PORT || '80');
 
 const elevenlabs = new ElevenLabsClient();
 const voiceId = '21m00Tcm4TlvDq8ikWAM';
@@ -57,6 +57,32 @@ function startApp() {
     });
 
     ws.on('error', console.error);
+  });
+
+  app.get('/', (_, res: Response) => {
+    res.send(`
+      <html>
+        <head>
+          <title>Twilio Voice Call Server</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              max-width: 800px;
+              margin: 40px auto;
+              padding: 20px;
+              line-height: 1.6;
+            }
+            h1 { color: #2c3e50; }
+            .info { color: #7f8c8d; }
+          </style>
+        </head>
+        <body>
+          <h1>Welcome to the Twilio Voice Call Server</h1>
+          <p class="info">This server is running and ready to handle incoming calls.</p>
+          <p class="info">Server is running on port: ${PORT}</p>
+        </body>
+      </html>
+    `);
   });
 
   app.listen(PORT, () => {
