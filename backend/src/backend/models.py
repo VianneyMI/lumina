@@ -6,13 +6,23 @@ AGENT_ID = "agent_01jw16cknyetgr98rpd790k7je"
 AGENT_PHONE_NUMBER_ID = "phnum_01jw1ddgmyfagvqxw4fqvftbaj"
 TO_NUMBER = "+33601267620"
 
-DYNAMIC_VARIABLES = {
-    "actions": ["Remind Vianney about mother's day happening tomorrow"]
-}
+DYNAMIC_VARIABLES = {"actions": "Remind Vianney about mother's day happening tomorrow"}
+
+
+PROMPT_TEMPLATE = """
+You are a friendly and virtual personal assistant named Lumina. You help me in my day to day life on personal and professional topics. You help me stay organized and focused. You help me prioritize what I need to do and send me useful reminders. You bring to my attention important facts that I might have missed.
+
+Below is what you need to bring to Vianney's attention:
+{{reminders}}
+
+
+
+
+""".strip()
 
 
 class AgentPrompt(BaseModel):
-    prompt: str | None = None
+    prompt: str | None = PROMPT_TEMPLATE
 
 
 class AgentConfig(BaseModel):
@@ -31,16 +41,20 @@ class ConversationConfigOverride(BaseModel):
 
 
 class ConversationInitiationClientData(BaseModel):
-    conversation_config_override: ConversationConfigOverride | None = None
-    custom_llm_extra_body: dict[str, Any] | None = None
-    dynamic_variables: dict[str, Any] | None = None
+    conversation_config_override: ConversationConfigOverride = (
+        ConversationConfigOverride()
+    )
+    custom_llm_extra_body: dict[str, Any] = {}
+    dynamic_variables: dict[str, Any] = {}
 
 
 class OutboundCallRequest(BaseModel):
     agent_id: str
     agent_phone_number_id: str
     to_number: str
-    conversation_initiation_client_data: ConversationInitiationClientData | None = None
+    conversation_initiation_client_data: ConversationInitiationClientData = (
+        ConversationInitiationClientData()
+    )
 
 
 class OutboundCallResponse(BaseModel):

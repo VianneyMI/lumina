@@ -12,7 +12,7 @@ eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
 def make_outbound_call(request: OutboundCallRequest):
     response = requests.post(
         eleven_labs_twillio_url,
-        headers={"Authorization": f"Bearer {eleven_labs_api_key}"},
+        headers={"Xi-Api-Key": eleven_labs_api_key},
         json=request.model_dump(),
     )
     return response.json()
