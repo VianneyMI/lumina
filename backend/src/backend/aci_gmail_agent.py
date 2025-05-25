@@ -42,6 +42,7 @@ def get_tool(function_name: str, linked_account_owner_id: str) -> FunctionTool:
 
 gmail_agent = Agent(
     name="gmail_agent",
+    model="o1",
     instructions="You are a helpful assistant that can use available tools to help the user.",
     tools=[
         get_tool("GMAIL__MESSAGES_LIST", LINKED_ACCOUNT_OWNER_ID),
@@ -51,11 +52,14 @@ gmail_agent = Agent(
 
 
 async def main() -> None:
-    result = await Runner.run(
-        starting_agent=gmail_agent,
-        input="What is the confirmation code sent by vianney.mixtur@outlook.fr ?",
-    )
-    print(result)
+    try:
+        result = await Runner.run(
+            starting_agent=gmail_agent,
+            input="What is the confirmation code sent by vianney.mixtur@outlook.fr ?",
+        )
+        print(result)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,60 @@
+{
+    "type": "function",
+    "function": {
+        "name": "BRAVE_SEARCH__WEB_SEARCH",
+        "description": "Brave Web Search API is a REST API to query Brave Search and get back search results from the web.",
+        "parameters": {
+            "type": "object",
+            "required": [
+                "query"
+            ],
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "required": [
+                        "q"
+                    ],
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "maxLength": 400,
+                            "description": "The user's search query term. Maximum of 400 characters and 50 words"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 20,
+                            "minimum": 1,
+                            "description": "Number of search results returned in response (max 20) The actual number delivered may be less than requested. Combine this parameter with offset to paginate search results."
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "maximum": 9,
+                            "minimum": 0,
+                            "description": "The zero based offset that indicates number of search results per page (count) to skip before returning the result. The maximum is 9. The actual number delivered may be less than requested based on the query. In order to paginate results use this parameter together with count"
+                        },
+                        "safesearch": {
+                            "enum": [
+                                "off",
+                                "moderate",
+                                "strict"
+                            ],
+                            "type": "string",
+                            "default": "moderate",
+                            "description": "Filters search results for adult content"
+                        },
+                        "extra_snippets": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "A snippet is an excerpt from a page you get as a result of the query, and extra_snippets allow you to get up to 5 additional, alternative excerpts."
+                        }
+                    },
+                    "description": "query parameters",
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

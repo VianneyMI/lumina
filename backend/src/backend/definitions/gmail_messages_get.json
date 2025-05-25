@@ -1,0 +1,59 @@
+{
+    "type": "function",
+    "function": {
+        "name": "GMAIL__MESSAGES_GET",
+        "description": "Gets the specified message",
+        "parameters": {
+            "type": "object",
+            "required": [
+                "path",
+                "query"
+            ],
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "id"
+                    ],
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the message to retrieve"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "required": [
+                        "format"
+                    ],
+                    "properties": {
+                        "format": {
+                            "enum": [
+                                "full",
+                                "metadata",
+                                "minimal",
+                                "raw"
+                            ],
+                            "type": "string",
+                            "default": "full",
+                            "description": "The format to return the message in"
+                        },
+                        "metadataHeaders": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "When given and format is metadata, only include headers specified"
+                        }
+                    },
+                    "description": "Query parameters",
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

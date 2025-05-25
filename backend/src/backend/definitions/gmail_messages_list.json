@@ -1,0 +1,49 @@
+{
+    "type": "function",
+    "function": {
+        "name": "GMAIL__MESSAGES_LIST",
+        "description": "Lists the messages in the user's mailbox",
+        "parameters": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "Only return messages matching the specified query. Supports the same query format as the Gmail search box."
+                        },
+                        "labelIds": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Only return messages with labels that match all of the specified label IDs."
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "default": null,
+                            "description": "Page token to retrieve a specific page of results"
+                        },
+                        "maxResults": {
+                            "type": "integer",
+                            "default": 100,
+                            "maximum": 500,
+                            "description": "Maximum number of messages to return. Default is 100."
+                        },
+                        "includeSpamTrash": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include messages from SPAM and TRASH in the results."
+                        }
+                    },
+                    "description": "Query parameters",
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
