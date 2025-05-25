@@ -7,11 +7,13 @@ requires-python = ">=3.13"
 dependencies = [
     "aci-sdk>=1.0.0b2",
     "fastapi>=0.115.12",
+    "litellm>=1.71.0",
     "openai>=1.82.0",
     "openai-agents>=0.0.16",
     "python-dotenv>=1.1.0",
     "requests>=2.32.3",
     "rich>=14.0.0",
+    "smolagents>=1.16.1",
 ]
 
 [dependency-groups]
