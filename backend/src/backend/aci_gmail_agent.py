@@ -105,7 +105,13 @@ class GmailGetMessageTool(Tool):
 
 agent = ToolCallingAgent(
     name="gmail_agent",
-    description="Agent that interacts with my gmail account.",
+    description="""
+    Agent that interacts with my gmail account.
+    NOTE:
+    When using the GMAIL__MESSAGES_GET tool, make sure to use the "minimal" format. Unless otherwise specified.
+    Especially, if you need to read several emails.
+    
+    """.strip(),
     model=llm,
     # instructions="You are a helpful assistant that can use available tools to help the user.",
     tools=[GmailListMessagesTool(), GmailGetMessageTool()],
