@@ -10,7 +10,11 @@ eleven_labs_twillio_url = "https://api.elevenlabs.io/v1/convai/twilio/outbound-c
 eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
 
 
-def make_outbound_call(request: OutboundCallRequest):
+def make_outbound_call(request: OutboundCallRequest, user_name: str = "Vianney"):
+    request.conversation_initiation_client_data.dynamic_variables["user_name"] = (
+        user_name
+    )
+
     response = requests.post(
         eleven_labs_twillio_url,
         headers={"Xi-Api-Key": eleven_labs_api_key},
@@ -26,15 +30,38 @@ class PhoneCallingTool(Tool):
     )
 
     inputs = {
-        "irrelevant": {
+        "user_name": {
             "type": "string",
-            "description": "This input is not used. It is just a placeholder to make the tool work.",
-        }
+            "description": "The name of the user to call.",
+            "default": "Vianney",
+            "nullable": True,
+        },
+        "reminders": {
+            "type": "string",
+            "description": "The reminders to send to the user passed as a comma separated list as a string",
+            "nullable": True,
+        },
+        "actions": {
+            "type": "string",
+            "description": "The actions to send to the user passed a comma separated list as a string",
+            "nullable": True,
+        },
     }
 
     output_type = "object"
 
-    def forward(self, irrelevant: str) -> str:
-        request = OutboundCallRequestBuilder().build()
+    def forward(
+        self,
+        user_name: str = "Vianney",
+        reminders: str | None = None,
+        actions: str | None = None,
+    ) -> str:
+        request = (
+            OutboundCallRequestBuilder()
+            .with_dynamic_variables(
+                {"user_name": user_name, "reminders": reminders, "actions": actions}
+            )
+            .build()
+        )
         response = make_outbound_call(request)
         return response

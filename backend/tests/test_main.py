@@ -1,5 +1,5 @@
 from backend.models import OutboundCallRequestBuilder, OutboundCallResponse
-from backend.main import make_outbound_call
+from backend.phone_calling_tool import make_outbound_call
 
 
 def test_make_outbound_call() -> None:
