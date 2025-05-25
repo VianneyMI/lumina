@@ -8,7 +8,6 @@ from openai import OpenAI
 from rich import print as rprint
 from rich.panel import Panel
 
-
 load_dotenv()
 LINKED_ACCOUNT_OWNER_ID = os.getenv("LINKED_ACCOUNT_OWNER_ID", "")
 if not LINKED_ACCOUNT_OWNER_ID:
@@ -22,19 +21,12 @@ aci = ACI()
 
 def main() -> None:
     # For a list of all supported apps and functions, please go to the platform.aci.dev
-    gmail_messages_list_function_definition = aci.functions.get_definition(
-        "GMAIL__MESSAGES_LIST"
+    brave_search_function_definition = aci.functions.get_definition(
+        "BRAVE_SEARCH__WEB_SEARCH"
     )
 
-    gmail_messages_get_function_definition = aci.functions.get_definition(
-        "GMAIL__MESSAGES_GET"
-    )
-
-    rprint(Panel("Gmail messages list function definition", style="bold blue"))
-    rprint(gmail_messages_list_function_definition)
-
-    rprint(Panel("Gmail messages get function definition", style="bold blue"))
-    rprint(gmail_messages_get_function_definition)
+    rprint(Panel("Brave search function definition", style="bold blue"))
+    rprint(brave_search_function_definition)
 
     response = openai.chat.completions.create(
         model="gpt-4o",
@@ -45,14 +37,11 @@ def main() -> None:
             },
             {
                 "role": "user",
-                "content": "What is the confirmation code sent by vianney.mixtur@outlook.fr ?",
+                "content": "What is aipolabs ACI?",
             },
         ],
-        tools=[
-            gmail_messages_list_function_definition,
-            gmail_messages_get_function_definition,
-        ],
-        # tool_choice="required",  # force the model to generate a tool call for demo purposes
+        tools=[brave_search_function_definition],
+        tool_choice="required",  # force the model to generate a tool call for demo purposes
     )
     tool_call = (
         response.choices[0].message.tool_calls[0]
@@ -81,8 +70,6 @@ def main() -> None:
         """
         rprint(Panel("Function Call Result", style="bold yellow"))
         rprint(result)
-
-    print(result)
 
 
 if __name__ == "__main__":
