@@ -1,77 +1,123 @@
-import asyncio
-import json
-import os
-from typing import Any
-
-import litellm
+from smolagents import ToolCallingAgent, Tool, LiteLLMModel
 from aci import ACI
 from aci.types.enums import FunctionDefinitionFormat
-from agents import Agent, FunctionTool, RunContextWrapper, Runner
-from dotenv import load_dotenv
+import litellm
+from typing import Any
 
-
-from smolagents import ToolCallingAgent, LiteLLMModel, Tool
-
-load_dotenv()
-LINKED_ACCOUNT_OWNER_ID = os.getenv("LINKED_ACCOUNT_OWNER_ID", "")
-if not LINKED_ACCOUNT_OWNER_ID:
-    raise ValueError("LINKED_ACCOUNT_OWNER_ID is not set")
-
-aci = ACI()
-
-llm = LiteLLMModel("gemini/gemini-2.5-flash-preview-04-17")
+llm = LiteLLMModel("anthropic/claude-3-5-sonnet-latest")
 litellm.drop_params = True  # 👈 KEY CHANGE
 
 
-def get_tool(function_name: str, linked_account_owner_id: str) -> FunctionTool:
-    function_definition = aci.functions.get_definition(function_name)
-    name = function_definition["function"]["name"]
-    description = function_definition["function"]["description"]
-    parameters = function_definition["function"]["parameters"]
+aci = ACI()
 
-    async def tool_impl(ctx: RunContextWrapper[Any], args: str) -> str:
+gmail_list_messages_function_definition = aci.functions.get_definition(
+    "GMAIL__MESSAGES_LIST"
+)
+gmail_get_message_function_definition = aci.functions.get_definition(
+    "GMAIL__MESSAGES_GET"
+)
+
+
+class GmailListMessagesTool(Tool):
+    name = gmail_list_messages_function_definition["function"]["name"]
+    description = """List the messages in my gmail account."""
+    inputs = {
+        "q": {
+            "type": "string",
+            "description": "The query to search for, e.g. 'from:vianney.mixtur@outlook.fr'",
+        },
+        # "maxResults": {
+        #     "type": "integer",
+        #     "description": "The maximum number of results to return, e.g. 10. Default is 100. Max is 500.",
+        #     "default": 100,
+        # },
+        # "labelIds": {
+        #     "type": "array",
+        #     "description": "The label ids to include in the results. Default is ['INBOX'].",
+        #     "default": ["INBOX"],
+        # },
+        # "pageToken": {
+        #     "type": "string",
+        #     "description": "The page token to use for pagination",
+        # },
+        # "includeSpamTrash": {
+        #     "type": "boolean",
+        #     "description": "Whether to include spam and trash in the results. Default is False.",
+        #     "default": False,
+        # },
+    }
+    output_type = "object"
+
+    def forward(
+        self,
+        q: str,
+        # maxResults: int,
+        # labelIds: list[str],
+        # pageToken: str,
+        # includeSpamTrash: bool,
+    ) -> dict:
         return aci.handle_function_call(
-            function_name,
-            json.loads(args),
-            linked_account_owner_id=linked_account_owner_id,
+            self.name,
+            {
+                "query": {
+                    "q": q,
+                    # "maxResults": maxResults,
+                    # "labelIds": labelIds,
+                    # "pageToken": pageToken,
+                    # "includeSpamTrash": includeSpamTrash,
+                }
+            },
+            linked_account_owner_id="HACKATHON",
             allowed_apps_only=True,
             format=FunctionDefinitionFormat.OPENAI,
         )
 
-    class GmailTool(Tool):
-        name = name
-        description = description
 
-    return FunctionTool(
-        name=name,
-        description=description,
-        params_json_schema=parameters,
-        on_invoke_tool=tool_impl,
-        # strict_json_schema=True,
-    )
+class GmailGetMessageTool(Tool):
+    name = gmail_get_message_function_definition["function"]["name"]
+    description = gmail_get_message_function_definition["function"]["description"]
+    inputs = {
+        "path": {
+            "type": "object",
+            "description": "A path object containing the id key. id being the id of the message to get, e.g. '1234567890'",
+        },
+        "query": {
+            "type": "object",
+            "description": """
+             A query object containing the following keys:
+             - format: the desired return format can be either "full", "metadata", "minimal" or "raw". Default is "full".
+             - metatadaHeaders: a list of metadata headers to include in the response.
+
+            """,
+        },
+    }
+    output_type = "object"
+
+    def forward(self, path: dict[str, Any], query: dict[str, Any]) -> dict:
+        return aci.handle_function_call(
+            self.name,
+            {"path": path, "query": query},
+            linked_account_owner_id="HACKATHON",
+            allowed_apps_only=True,
+            format=FunctionDefinitionFormat.OPENAI,
+        )
 
 
-gmail_agent = ToolCallingAgent(
+agent = ToolCallingAgent(
     name="gmail_agent",
-    # model="o1",
-    instructions="You are a helpful assistant that can use available tools to help the user.",
-    tools=[
-        get_tool("GMAIL__MESSAGES_LIST", LINKED_ACCOUNT_OWNER_ID),
-        get_tool("GMAIL__MESSAGES_GET", LINKED_ACCOUNT_OWNER_ID),
-    ],
+    description="Agent that interacts with my gmail account.",
+    model=llm,
+    # instructions="You are a helpful assistant that can use available tools to help the user.",
+    tools=[GmailListMessagesTool(), GmailGetMessageTool()],
+    add_base_tools=True,
 )
 
 
-async def main() -> None:
-    try:
-        result = await Runner.run(
-            starting_agent=gmail_agent,
-            input="Search for emails from vianney.mixtur@outlook.fr, read the access code in its last email",
-        )
-        print(result)
-    except Exception as e:
-        print(e)
+def main() -> None:
+    result = agent.run(
+        "Examine my last 10 emails. There should be one from vianney.mixtur@outlook.fr. Read the confirmation code in the email and return it."
+    )
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
