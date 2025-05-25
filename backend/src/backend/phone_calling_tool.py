@@ -10,11 +10,7 @@ eleven_labs_twillio_url = "https://api.elevenlabs.io/v1/convai/twilio/outbound-c
 eleven_labs_api_key = os.getenv("ELEVEN_LABS_API_KEY")
 
 
-def make_outbound_call(request: OutboundCallRequest, user_name: str = "Vianney"):
-    request.conversation_initiation_client_data.dynamic_variables["user_name"] = (
-        user_name
-    )
-
+def make_outbound_call(request: OutboundCallRequest):
     response = requests.post(
         eleven_labs_twillio_url,
         headers={"Xi-Api-Key": eleven_labs_api_key},
@@ -65,3 +61,8 @@ class PhoneCallingTool(Tool):
         )
         response = make_outbound_call(request)
         return response
+
+
+if __name__ == "__main__":
+    tool = PhoneCallingTool()
+    print(tool.forward())

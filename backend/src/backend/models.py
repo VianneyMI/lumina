@@ -83,6 +83,6 @@ class OutboundCallRequestBuilder(BaseModel):
             agent_phone_number_id=self.agent_phone_number_id,
             to_number=TO_NUMBER,
             conversation_initiation_client_data=ConversationInitiationClientData(
-                dynamic_variables=DYNAMIC_VARIABLES,
+                dynamic_variables=self.dynamic_variables or DYNAMIC_VARIABLES,
             ),
         )

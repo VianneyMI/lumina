@@ -7,7 +7,7 @@ def test_phone_calling_tool() -> None:
 
     1. Mother's day is today
     2. Today is the last day to apply to PIONNEERS
-    3. The Hackathon is attending submission deadline is at 2:00 PM
+    3. The Hackathon he is attending submission deadline is at 2:00 PM
 
     Therfore below are the top 3 actions that Vianney need to perform next week:
 
