@@ -5,7 +5,9 @@ from aci import ACI
 from aci.types.functions import FunctionDefinitionFormat
 from dotenv import load_dotenv
 
-path_to_definitions = Path(__file__).parents[1] / "src" / "backend" / "definitions"
+path_to_definitions = (
+    Path(__file__).parents[1] / "src" / "backend" / "aci_functions_definitions"
+)
 load_dotenv()
 
 
