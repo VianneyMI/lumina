@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aci-sdk>=1.0.0b2",
+    "duckduckgo-search>=8.0.2",
     "fastapi>=0.115.12",
     "litellm>=1.71.0",
     "openai>=1.82.0",
